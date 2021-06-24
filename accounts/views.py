@@ -7,7 +7,6 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 # Create your views here.
 def register(request):
-	print(request.user)
 	if request.method == 'POST':
 		form = UserCreationForm(request.POST)
 		if form.is_valid():
@@ -32,7 +31,6 @@ def register(request):
 		return render(request, "registration/register.html", context)
 
 def signin(request):
-	print('dsa')
 	if request.user.is_authenticated:
 		return render(request, 'base.html')
 	if request.method == 'POST':
