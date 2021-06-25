@@ -13,7 +13,11 @@ def getDetails(domain: str):
 	'''
 		Get Details of Entered Domain Name
 	'''
-	data = whois.query(domain)
+	try:
+		data = whois.query(domain)
+	except (whois.exceptions.FailedParsingWhoisOutput, whois.exceptions.UnknownTld):
+		return None
+		
 	if data is None:
 		return None
 	return data.__dict__
