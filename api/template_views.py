@@ -8,3 +8,9 @@ from rest_framework.permissions import IsAuthenticated
 @permission_classes([IsAuthenticated])
 def domain_availablity(request):
 	return render(request, "check_domain.html")
+
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def history(request):
+	return render(request, "history.html")

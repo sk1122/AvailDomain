@@ -5,30 +5,87 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Check Domains</title>
+
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
 <body>
-	<form action="">
-		<input type="text" id="domain">
-		<input type="submit" id="submit">
-	</form>
 
-	<div id="domain_data">
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="#">AvailDomains</a>
+			<button
+				class="navbar-toggler"
+				type="button"
+				data-bs-toggle="collapse"
+				data-bs-target="#navbarSupportedContent"
+				aria-controls="navbarSupportedContent"
+				aria-expanded="false"
+				aria-label="Toggle navigation"
+			>
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+					<li class="nav-item">
+						<a class="nav-link active" aria-current="page" href="#"
+							>Home</a
+						>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Profile</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	
+
+	<div class="container-fluid py-5 d-flex justify-content-center
+	">
+		<form action="" class="row g-3">
+			<div class="col-auto">
+				<label for="domain" class="visually-hidden">Enter Domain</label>
+				<input type="text" id="domain" class="form-control" placeholder="Enter Domain">
+			</div>
+			<div class="col-auto">
+				<input type="submit" id="submit" class="btn btn-primary mb-3">
+			</div>
+		</form>
+	</div>
+
+	<div id="domain_data" class="container-fluid py-5 d-flex flex-column justify-content-center align-items-center" style="background-color: darkgray;">
 
 	</div>
 
+	<div id="other_domains" class="container-fluid py-5 d-flex flex-column justify-content-center align-items-center"></div>
+
 	<script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
 	<script>
-		domain = document.getElementById('domain')
-		submit = document.getElementById('submit')
+		let domain = document.getElementById('domain')
+		let submit = document.getElementById('submit')
+		let domain_data = document.getElementById('domain_data')
+		let other_domains = document.getElementById('other_domains')
+
+		let available_tlds = []
 
 		submit.addEventListener('click', function(e) {
 			e.preventDefault()
 			console.log(domain.value)
 			document.getElementById('domain_data').innerHTML = "Loading..."
+			check_domain_availabilty(domain.value)
+			get_available_tlds()
+		})
+		
+		let arr = [] // for domain availablity
+		function check_domain_availabilty(domain, get_all_details) {
+			// Check if Domain is Available
+			// @params - domain - string
+			// @params - get_all_details - boolean
+			// API Route - /api/check_domain
 			fetch("{% url 'check_availablity' %}", {
 				method: 'POST',
 				body: JSON.stringify({
-					domain: domain.value
+					domain: domain
 				}),
 				headers: {
 					'Content-Type': 'application/json',
@@ -39,10 +96,9 @@
 				const d = res.json()
 				.then(data => {
 					if(data.data == null) {
-						document.getElementById('domain_data').innerHTML = domain.value + " is Available!!!"
 						return
 					}
-					document.getElementById('domain_data').innerHTML = `
+					domain_data.innerHTML = `
 						<h1>${data.data['name']}</h1>
 						<p>${data.data['registrant_country']} | ${data.data['registrant']}</p>
 						<p>Creation Date - ${data.data['creation_date']}</p>
@@ -53,7 +109,66 @@
 					`
 				})
 			})
-		})
+		}
+
+		function check_domain_availabilty2(domain) {
+			// Check if Domain is Available
+			// @params - domain - string
+			// @params - get_all_details - boolean
+			// API Route - /api/check_domain
+			fetch("{% url 'check_availablity2' %}", {
+				method: 'POST',
+				body: JSON.stringify({
+					domain: domain
+				}),
+				headers: {
+					'Content-Type': 'application/json',
+					"X-CSRFToken": Cookies.get('csrftoken')
+				}
+			})
+			.then(res => {
+				const d = res.json()
+				.then(data => {
+					if(data.data == null) {
+						arr.push(true)
+						document.getElementById("." + domain.split(".")[1]).innerHTML += '<span class="mx-5 btn btn-success">Available</span>'
+						return
+					}
+					arr.push(data.data['creation_date'] == null ? true : false)
+					// console.log(domain.split(".")[1])
+					document.getElementById("." + domain.split(".")[1]).innerHTML += data.data['creation_date'] == null ? '<span class="mx-5 btn btn-success">Available</span>' : '<span class="mx-5 btn btn-danger">Not Available</span>'
+				})
+				.catch(() => {
+					arr.push(false)
+				})
+			})
+			.catch(() => {
+				arr.push(false)
+			})
+		}
+
+		function get_available_tlds(sld) {
+			// @params - sld - string
+			fetch("{% url 'get_available_tlds' %}")
+			.then(res => res.json())
+			.then(data => {
+				available_tlds = data.data
+				let sld = domain.value.split(".")[0]
+				for(let i = 0; i < available_tlds.length; i++) {
+					other_domains.innerHTML += `<p id="${available_tlds[i]}">${sld + available_tlds[i]}</p>`
+				}
+				check_other_domains(sld)
+			})
+		}
+
+		async function check_other_domains(sld) {
+			// @params - sld - string
+			for(let i = 0; i < available_tlds.length; i++) {
+				console.log("Initiated - " + sld + available_tlds[i])
+				let condition = await check_domain_availabilty2(sld + available_tlds[i])
+				console.log("Completed - " + sld + available_tlds[i])
+			}
+		}
 	</script>
 </body>
 </html>
