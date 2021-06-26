@@ -100,5 +100,5 @@ pip install -r requirements.txt
 ``` 
 - Then Create Migrations `python3 manage.py makemigrations`
 - Run Migrations `python3 manage.py migrate`
+- Run Tests `python3 manage.py test`
 - Run App `python3 manage.py runserver`
-
