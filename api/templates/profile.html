@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Profile {% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
+	<div class="container">
+		<h2>Welcome {{ user.username }}</h2>
+	</div>
+
+	<h4>History</h4>
+	<ul>
+		{% for data in history %}
+			<li>{{data.domain}}</li>
+		{% endfor %}
+	</ul>
+{% endblock %}

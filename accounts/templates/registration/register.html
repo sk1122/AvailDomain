@@ -1,14 +1,30 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %} Register {% endblock title %}
 
 {% block content %}
+<link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
+
 	<h1>Register</h1>
 
-	<form method="post">
+	<form action="" method="post">
 		{% csrf_token %}
-		{{ form.as_p }}
-		<input type="submit" value="Login">
+		<div class="mb-3">
+			<label for="exampleFormControlInput1" class="form-label">Username</label>
+			{{ form.username }}
+		</div>
+		<div class="mb-3">
+			<label for="exampleFormControlTextarea1" class="form-label">Password</label>
+			{{ form.password1 }}
+		</div>
+		<div class="mb-3">
+			<label for="exampleFormControlTextarea1" class="form-label">Password</label>
+			{{ form.password2 }}
+		</div>
+		<div class="mb-3">
+			<input type="submit" class="btn btn-primary">
+		</div>
 	</form>
 
 	{% for field, errors in form.errors.items %}
