@@ -3,6 +3,8 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
+from .models import *
+
 @api_view(['GET'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
@@ -13,4 +15,7 @@ def domain_availablity(request):
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def history(request):
-	return render(request, "history.html")
+	context =  {
+		'history': History.objects.filter(user=request.user)
+	}
+	return render(request, "profile.html", context)

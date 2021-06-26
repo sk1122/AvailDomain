@@ -8,5 +8,5 @@ urlpatterns = [
 	path('api/get_history/', views.get_history, name="get_history"),
 	
 	path('', template_views.domain_availablity, name="domain_availablity"),
-	path('history/', template_views.history, name="history"),
+	path('profile/', template_views.history, name="profile"),
 ]

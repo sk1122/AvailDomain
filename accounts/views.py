@@ -5,8 +5,12 @@ from django.contrib import messages
 
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
-# Create your views here.
 def register(request):
+	'''
+		@params - username, password
+	'''
+	if request.user.is_authenticated:
+		return redirect('/')
 	if request.method == 'POST':
 		form = UserCreationForm(request.POST)
 		if form.is_valid():
@@ -16,7 +20,7 @@ def register(request):
 			password = form.cleaned_data['password1']
 
 			user = User(username=username, password=password)
-			return render(request, "base.html")
+			return redirect('login')
 		else:
 			form = UserCreationForm(request.POST)
 			context = {
@@ -31,8 +35,11 @@ def register(request):
 		return render(request, "registration/register.html", context)
 
 def signin(request):
+	'''
+		@params - username, password
+	'''
 	if request.user.is_authenticated:
-		return render(request, 'base.html')
+		return redirect('/')
 	if request.method == 'POST':
 		username = request.POST['username']
 		password = request.POST['password']
